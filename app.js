@@ -8,7 +8,7 @@ const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const usersRouter = require('./routes/users');
 const dishRouter = require('./routes/dish');
 const leaderRouter = require('./routes/leader');
 const promoRouter = require('./routes/promotion');
@@ -42,41 +42,24 @@ app.use(session({
   store: new FileStore()
 }));
 
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+
 const auth = (req, res, next) => {
   console.log(req.session);
 
   
   if (!req.session.user) {
-    var authHeader = req.headers.authorization;
-    if (!authHeader) {
-      var err = new Error('You are not authenticated!');
-  
-      res.setHeader('WWW-Authenticate', 'Basic');
-      err.status = 401;
-      return next(err);
-    }
-  
-    var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-  
-    var username = auth[0];
-    var password = auth[1];
-  
-    if (!(username  === 'admin' && password === 'password')) {
-      var err = new Error('You are not authenticated!');
-  
-      res.setHeader('WWW-Authenticate', 'Basic');
-      err.status = 401;
-      return next(err); 
-    } 
-    req.session.user = 'admin';
-    next();
+    var err = new Error('You are not authenticated!');
+    err.status = 401;
+    return next(err);
   } else {
-    if (req.session.user === 'admin') {
+    if (req.session.user === 'authenticated') {
       next();
     } else {
       var err = new Error('You are not authenticated!');
 
-      err.status = 401;
+      err.status = 403;
       return next(err); 
     }
   }
@@ -86,8 +69,6 @@ app.use(auth)
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/dishes', dishRouter);
 app.use('/leaders', leaderRouter);
 app.use('/promotions', promoRouter);
@@ -105,7 +86,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', {title: "Node API"});
 });
 
 module.exports = app;
