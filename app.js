@@ -15,6 +15,7 @@ const usersRouter = require('./routes/users');
 const dishRouter = require('./routes/dish');
 const leaderRouter = require('./routes/leader');
 const promoRouter = require('./routes/promotion');
+const uploadRouter = require('./routes/upload');
 
 const Dishes = require('./models/dishes');
 
@@ -26,6 +27,12 @@ connect.then(db => {
 
 
 var app = express();
+
+app.all('*', (req, res, next) => {
+  if (req.secure) 
+    return next();
+  res.redirect(307, `https://${req.hostname}:${app.get('secPort')}${req.url}`);  
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -46,6 +53,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/dishes', dishRouter);
 app.use('/leaders', leaderRouter);
 app.use('/promotions', promoRouter);
+app.use('/imageUpload', uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

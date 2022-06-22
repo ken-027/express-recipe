@@ -2,3 +2,6 @@ node_modules
 mongodb
 node-mongo
 db.json
+bin/cert.csr
+bin/certificate.pem
+bin/private.key
