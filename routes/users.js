@@ -1,20 +1,24 @@
 var express = require('express');
 const bodyParser = require('body-parser');
-const User = require('../models/user');
+const Users = require('../models/user');
 const { ReturnDocument } = require('mongodb');
-const user = require('../models/user');
 const passport = require('passport');
 const authenticate = require('../authenticate');
 
 var router = express.Router();
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.get('/', authenticate.verfiyUser, authenticate.verifyAdmin, function(req, res, next) {
+  Users.find({})
+  .then(user => {
+    res.statusCode = 200;
+    res.setHeader('content-type', 'application/json');
+    res.json(user);
+  })
 });
 
 router.post('/signup', (req, res, next) => {
-  User.register(new User({ username: req.body.username }), 
+  Users.register(new User({ username: req.body.username }), 
     req.body.password, 
     (err, user) =>{
       console.log(user);
@@ -44,7 +48,6 @@ router.post('/signup', (req, res, next) => {
 });
 
 router.post('/login', passport.authenticate('local'), (req, res) => {
-
   const token = authenticate.getToken({_id: req.user._id});
   res.statusCode = 200;
   res.setHeader('Content-type', 'application/json');
