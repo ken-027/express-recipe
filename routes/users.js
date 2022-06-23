@@ -4,11 +4,12 @@ const Users = require('../models/user');
 const { ReturnDocument } = require('mongodb');
 const passport = require('passport');
 const authenticate = require('../authenticate');
+const cors = require('./cors');
 
 var router = express.Router();
 
 /* GET users listing. */
-router.get('/', authenticate.verfiyUser, authenticate.verifyAdmin, function(req, res, next) {
+router.get('/', cors.corsWithOptions, authenticate.verfiyUser, authenticate.verifyAdmin, function(req, res, next) {
   Users.find({})
   .then(user => {
     res.statusCode = 200;
@@ -17,7 +18,7 @@ router.get('/', authenticate.verfiyUser, authenticate.verifyAdmin, function(req,
   })
 });
 
-router.post('/signup', (req, res, next) => {
+router.post('/signup', cors.corsWithOptions, (req, res, next) => {
   Users.register(new User({ username: req.body.username }), 
     req.body.password, 
     (err, user) =>{
@@ -47,14 +48,14 @@ router.post('/signup', (req, res, next) => {
   })
 });
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
+router.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res) => {
   const token = authenticate.getToken({_id: req.user._id});
   res.statusCode = 200;
   res.setHeader('Content-type', 'application/json');
   res.json({ success: true, token: token, status: 'You are successfully logged in!' });
 });
 
-router.get('/logout', (req, res, next) => {
+router.get('/logout', cors.corsWithOptions, (req, res, next) => {
   if (!req.session) {
     var err = new Error('You are not logged in!');
     err.status = 403; 
