@@ -17,6 +17,7 @@ const leaderRouter = require('./routes/leader');
 const promoRouter = require('./routes/promotion');
 const uploadRouter = require('./routes/upload');
 const favoriteRouter = require('./routes/favorite');
+const commentRouter = require('./routes/comment');
 
 const Dishes = require('./models/dishes');
 
@@ -52,6 +53,7 @@ app.use('/users', usersRouter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/dishes', dishRouter);
+app.use('/comments', commentRouter);
 app.use('/leaders', leaderRouter);
 app.use('/promotions', promoRouter);
 app.use('/favorites', favoriteRouter);
