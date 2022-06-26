@@ -15,7 +15,7 @@ favoritesRouter.route('/')
     res.sendStatus(200);
 })
 .get(cors.cors, authenticate.verfiyUser, (req, res, next) => {
-    Favorites.find({ user: req.user._id })
+    Favorites.findOne({ user: req.user._id })
     // Favorites.find()
     .populate('dishes')
     .populate('user')
@@ -31,9 +31,9 @@ favoritesRouter.route('/')
     res.end(`PUT operation not supported on /favorite`);
 })
 .post(cors.corsWithOptions, authenticate.verfiyUser, (req, res, next) => {
-    Favorites.find({ user: req.user._id })
+    Favorites.findOne({ user: req.user._id })
     .then(favorite => {
-        if (!favorite.length) {
+        if (!favorite) {
             Favorites.create({
                 user: req.user._id,
                 dishes: req.body
