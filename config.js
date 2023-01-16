@@ -1,8 +1,8 @@
 module.exports = {
-    'secretKey': '12345-67890-09876-54321',
-    'mongoUrl': 'mongodb://localhost:27017/conFusion',
+    'secretKey': process.env.SECRETKEY || '12345',
+    'mongoUrl': process.env.MONGOURL || 'mongodb://localhost:27017/app',
     'facebook': {
-        clientId: 'client id',
-        clientSecret: 'client secret id'
+        clientId: process.env.FACEBOOKCLIENTID || 'clientid',
+        clientSecret: process.env.FACEBOOKCLIENTSECRET || 'clientsecret'
     }
 }
